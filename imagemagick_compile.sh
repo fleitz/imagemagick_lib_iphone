@@ -51,13 +51,13 @@ OUTPUT_FILE="$(pwd)/imagemagick_log_$(date +%s)"
 
 # Architectures and versions
 ARCH_SIM="i386"
-ARCH_IPHONE="armv7"
-ARCH_IPHONE6="armv6"
+ARCH_IPHONE="armv7s"
+ARCH_IPHONE6="armv7"
 GCC_VERSION="4.2.1"
-MIN_IPHONE_VERSION="3.1"
-IPHONE_SDK_VERSION="4.3"
+MIN_IPHONE_VERSION="4.3"
+IPHONE_SDK_VERSION="6.0"
 MACOSX_SDK_VERSION="10.5"
-IPHONE="armv6 + armv7"
+IPHONE="armv7 + armv7s"
 
 # Set this to where you want the libraries to be placed (if dir is not present it will be created):
 TARGET_LIB_DIR=$(pwd)/tmp_target
@@ -85,10 +85,10 @@ mkdir -p $PNG_LIB_DIR
 mkdir -p $TIFF_LIB_DIR
 
 # General folders where you have the iPhone compiler + tools
-export DEVROOT="/Developer/Platforms/iPhoneOS.platform/Developer"
+export DEVROOT="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer"
 export SDKROOT="${DEVROOT}/SDKs/iPhoneOS${IPHONE_SDK_VERSION}.sdk"
-export MACOSXROOT="/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator${IPHONE_SDK_VERSION}.sdk"
-
+export MACOSXROOT="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator${IPHONE_SDK_VERSION}.sdk"
+export CLANGROOT="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain"
 # Compiler flags and config arguments - IPHONE
 COMMON_IPHONE_LDFLAGS="-L$SDKROOT/usr/lib/"
 COMMON_IPHONE_CFLAGS="-arch $ARCH_IPHONE -miphoneos-version-min=$MIN_IPHONE_VERSION -pipe -Os -isysroot $SDKROOT \
@@ -111,7 +111,7 @@ if [ -e $SDKROOT/usr/include/crt_externs.h ]; then
 	:;
 else
 	echo "[INFO] need to copy crt_externals.h for compilation, please enter sudo password"
-	sudo cp "/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator$IPHONE_SDK_VERSION.sdk/usr/include/crt_externs.h" \
+  sudo cp "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator${IPHONE_SDK_VERSION}.sdk/usr/include/crt_externs.h" \
 		"$SDKROOT/usr/include/crt_externs.h"
 fi
 ############    END    ############
@@ -142,8 +142,8 @@ export LDFLAGS="$COMMON_IPHONE_LDFLAGS"
 export CFLAGS="$COMMON_IPHONE_CFLAGS"
 
 echo "[|- CONFIG ${ARCH_IPHONE}]"
-./configure prefix=$PNG_LIB_DIR CC=$DEVROOT/usr/bin/clang --enable-shared --enable-static \
-CC=$DEVROOT/usr/bin/clang LD=$DEVROOT/usr/bin/ld --host=arm-apple-darwin >> $OUTPUT_FILE 2>&1
+./configure prefix=$PNG_LIB_DIR CC=$CLANGROOT/usr/bin/clang --enable-shared --enable-static \
+CC=$CLANGROOT/usr/bin/clang LD=$DEVROOT/usr/bin/ld --host=arm-apple-darwin >> $OUTPUT_FILE 2>&1
 
 echo "[|- CC ${ARCH_IPHONE}]"
 make -j2 >> $OUTPUT_FILE 2>&1
@@ -161,8 +161,8 @@ make distclean >> $OUTPUT_FILE 2>&1
 export CFLAGS="$COMMON_IPHONE6_CFLAGS"
 
 echo "[|- CONFIG ${ARCH_IPHONE6}]"
-./configure prefix=$PNG_LIB_DIR CC=$DEVROOT/usr/bin/clang --enable-shared --enable-static \
-CC=$DEVROOT/usr/bin/clang LD=$DEVROOT/usr/bin/ld --host=arm-apple-darwin >> $OUTPUT_FILE 2>&1
+./configure prefix=$PNG_LIB_DIR CC=$CLANGROOT/usr/bin/clang --enable-shared --enable-static \
+CC=$CLANGROOT/usr/bin/clang LD=$DEVROOT/usr/bin/ld --host=arm-apple-darwin >> $OUTPUT_FILE 2>&1
 
 echo "[|- CC ${ARCH_IPHONE6}]"
 make -j2 >> $OUTPUT_FILE 2>&1
@@ -186,7 +186,7 @@ export CPP=$U_CPP
 export CPPFLAGS=$U_CPPFLAGS
 
 echo "[|- CONFIG $ARCH_SIM]"
-./configure prefix=$PNG_LIB_DIR CC=$DEVROOT/usr/bin/clang --enable-shared --enable-static \
+./configure prefix=$PNG_LIB_DIR CC=$CLANGROOT/usr/bin/clang --enable-shared --enable-static \
 --host=i686-apple-darwin10 >> $OUTPUT_FILE 2>&1
 
 echo "[|- CC $ARCH_SIM]"
@@ -241,7 +241,7 @@ export CFLAGS="$COMMON_IPHONE_CFLAGS"
 
 echo "[|- CONFIG $ARCH_IPHONE]"
 ./configure prefix=$JPEG_LIB_DIR --enable-shared --enable-static \
-CC=$DEVROOT/usr/bin/clang LD=$DEVROOT/usr/bin/ld --host=arm-apple-darwin >> $OUTPUT_FILE 2>&1
+CC=$CLANGROOT/usr/bin/clang LD=$DEVROOT/usr/bin/ld --host=arm-apple-darwin >> $OUTPUT_FILE 2>&1
 
 echo "[|- CC $ARCH_IPHONE]"
 make -j2 >> $OUTPUT_FILE 2>&1
@@ -259,7 +259,7 @@ export CFLAGS="$COMMON_IPHONE6_CFLAGS"
 
 echo "[|- CONFIG $ARCH_IPHONE6]"
 ./configure prefix=$JPEG_LIB_DIR --enable-shared --enable-static \
-CC=$DEVROOT/usr/bin/clang LD=$DEVROOT/usr/bin/ld --host=arm-apple-darwin >> $OUTPUT_FILE 2>&1
+CC=$CLANGROOT/usr/bin/clang LD=$DEVROOT/usr/bin/ld --host=arm-apple-darwin >> $OUTPUT_FILE 2>&1
 
 echo "[|- CC $ARCH_IPHONE6]"
 make -j2 >> $OUTPUT_FILE 2>&1
@@ -283,7 +283,7 @@ export CPP=$U_CPP
 export CPPFLAGS=$U_CPPFLAGS
 
 echo "[|- CONFIG $ARCH_SIM]"
-./configure prefix=$JPEG_LIB_DIR CC=$DEVROOT/usr/bin/clang --enable-shared \
+./configure prefix=$JPEG_LIB_DIR CC=$CLANGROOT/usr/bin/clang --enable-shared \
 --enable-static --host=i686-apple-darwin10 >> $OUTPUT_FILE 2>&1
 
 echo "[|- CC $ARCH_SIM]"
@@ -337,7 +337,7 @@ export LDFLAGS="$COMMON_IPHONE_LDFLAGS"
 export CFLAGS="$COMMON_IPHONE_CFLAGS"
 
 echo "[|- CONFIG $ARCH_IPHONE]"
-./configure prefix=$TIFF_LIB_DIR CC=$DEVROOT/usr/bin/clang \
+./configure prefix=$TIFF_LIB_DIR CC=$CLANGROOT/usr/bin/clang \
 LD=$DEVROOT/usr/bin/ld --host=arm-apple-darwin --disable-cxx >> $OUTPUT_FILE 2>&1
 
 echo "[|- CC $ARCH_IPHONE]"
@@ -355,7 +355,7 @@ make distclean >> $OUTPUT_FILE 2>&1
 export CFLAGS="$COMMON_IPHONE6_CFLAGS"
 
 echo "[|- CONFIG $ARCH_IPHONE6]"
-./configure prefix=$TIFF_LIB_DIR CC=$DEVROOT/usr/bin/clang \
+./configure prefix=$TIFF_LIB_DIR CC=$CLANGROOT/usr/bin/clang \
 LD=$DEVROOT/usr/bin/ld --host=arm-apple-darwin --disable-cxx >> $OUTPUT_FILE 2>&1
 
 echo "[|- CC $ARCH_IPHONE6]"
@@ -380,7 +380,7 @@ export CPP=$U_CPP
 export CPPFLAGS=$U_CPPFLAGS
 
 echo "[|- CONFIG $ARCH_SIM]"
-./configure prefix=$TIFF_LIB_DIR CC=$DEVROOT/usr/bin/clang --host=i686-apple-darwin10 \
+./configure prefix=$TIFF_LIB_DIR CC=$CLANGROOT/usr/bin/clang --host=i686-apple-darwin10 \
 --disable-cxx >> $OUTPUT_FILE 2>&1
 
 echo "[|- CC $ARCH_SIM]"
@@ -441,7 +441,7 @@ export CXXFLAGS="-Wall -W -D_THREAD_SAFE -DHAVE_J1=0 -DTARGET_OS_IPHONE -DMAGICK
 
 # configure to have the static libraries
 echo "[|- CONFIG $ARCH_IPHONE]"
-./configure prefix=$IM_LIB_DIR CC=$DEVROOT/usr/bin/clang LD=$DEVROOT/usr/bin/ld \
+./configure prefix=$IM_LIB_DIR CC=$CLANGROOT/usr/bin/clang LD=$DEVROOT/usr/bin/ld \
 --host=arm-apple-darwin --disable-largefile --with-quantum-depth=8 --without-magick-plus-plus \
 --without-perl --without-x --disable-shared --disable-openmp --without-bzlib --without-freetype >> $OUTPUT_FILE 2>&1
 
@@ -464,7 +464,7 @@ export LDFLAGS="$IM_LDFLAGS6 $COMMON_IPHONE_LDFLAGS"
 
 # configure to have the static libraries
 echo "[|- CONFIG $ARCH_IPHONE6]"
-./configure prefix=$IM_LIB_DIR CC=$DEVROOT/usr/bin/clang LD=$DEVROOT/usr/bin/ld \
+./configure prefix=$IM_LIB_DIR CC=$CLANGROOT/usr/bin/clang LD=$DEVROOT/usr/bin/ld \
 --host=arm-apple-darwin --disable-largefile --with-quantum-depth=8 --without-magick-plus-plus \
 --without-perl --without-x --disable-shared --disable-openmp --without-bzlib --without-freetype >> $OUTPUT_FILE 2>&1
 
@@ -501,7 +501,7 @@ export CPPFLAGS="$U_CPPFLAGS $U_LDFLAGS $IM_IFLAGS -DHAVE_J1=0 -DTARGET_OS_IPHON
 
 # configure with standard parameters
 echo "[|- CONFIG $ARCH_SIM]"
-./configure prefix=$IM_LIB_DIR CC=$DEVROOT/usr/bin/clang --host=i686-apple-darwin10 \
+./configure prefix=$IM_LIB_DIR CC=$CLANGROOT/usr/bin/clang --host=i686-apple-darwin10 \
 --disable-largefile --with-quantum-depth=8 --without-magick-plus-plus --without-perl --without-x \
 --disable-shared --disable-openmp --without-bzlib --without-freetype --without-threads >> $OUTPUT_FILE 2>&1
 
