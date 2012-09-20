@@ -54,7 +54,7 @@ ARCH_SIM="i386"
 ARCH_IPHONE="armv7s"
 ARCH_IPHONE6="armv7"
 GCC_VERSION="4.2.1"
-MIN_IPHONE_VERSION="4.3"
+MIN_IPHONE_VERSION="6.0"
 IPHONE_SDK_VERSION="6.0"
 MACOSX_SDK_VERSION="10.5"
 IPHONE="armv7 + armv7s"
@@ -90,7 +90,8 @@ export SDKROOT="${DEVROOT}/SDKs/iPhoneOS${IPHONE_SDK_VERSION}.sdk"
 export MACOSXROOT="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator${IPHONE_SDK_VERSION}.sdk"
 export CLANGROOT="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain"
 # Compiler flags and config arguments - IPHONE
-COMMON_IPHONE_LDFLAGS="-L$SDKROOT/usr/lib/"
+COMMON_IPHONE_LDFLAGS="-arch $ARCH_IPHONE -L$SDKROOT/usr/lib/"
+COMMON_IPHONE6_LDFLAGS="-arch $ARCH_IPHONE6 -L$SDKROOT/usr/lib/"
 COMMON_IPHONE_CFLAGS="-arch $ARCH_IPHONE -miphoneos-version-min=$MIN_IPHONE_VERSION -pipe -Os -isysroot $SDKROOT \
 -I$SDKROOT/usr/include -I$SDKROOT/usr/lib/gcc/arm-apple-darwin10/$GCC_VERSION/include/"
 COMMON_IPHONE6_CFLAGS="-arch $ARCH_IPHONE6 -miphoneos-version-min=$MIN_IPHONE_VERSION -pipe -Os -isysroot $SDKROOT \
@@ -158,6 +159,7 @@ echo "[|- CLEAN ${ARCH_IPHONE}]"
 make distclean >> $OUTPUT_FILE 2>&1
 
 ## ARMV6 ##
+export LDFLAGS="$COMMON_IPHONE6_LDFLAGS"
 export CFLAGS="$COMMON_IPHONE6_CFLAGS"
 
 echo "[|- CONFIG ${ARCH_IPHONE6}]"
@@ -255,6 +257,7 @@ echo "[|- CLEAN $ARCH_IPHONE]"
 make distclean >> $OUTPUT_FILE 2>&1
 
 ## ARMV6 ##
+export LDFLAGS="$COMMON_IPHONE6_LDFLAGS"
 export CFLAGS="$COMMON_IPHONE6_CFLAGS"
 
 echo "[|- CONFIG $ARCH_IPHONE6]"
@@ -352,6 +355,7 @@ echo "[|- CLEAN $ARCH_IPHONE]"
 make distclean >> $OUTPUT_FILE 2>&1
 
 ## ARMV6 ##
+export LDFLAGS="$COMMON_IPHONE6_LDFLAGS"
 export CFLAGS="$COMMON_IPHONE6_CFLAGS"
 
 echo "[|- CONFIG $ARCH_IPHONE6]"
@@ -460,7 +464,7 @@ make distclean >> $OUTPUT_FILE 2>&1
 
 ## ARMV6 ##
 export CFLAGS="$COMMON_IPHONE6_CFLAGS $IM_IFLAGS -DHAVE_J1=0 -DTARGET_OS_IPHONE -DMAGICKCORE_WORDS_BIGENDIAN"
-export LDFLAGS="$IM_LDFLAGS6 $COMMON_IPHONE_LDFLAGS"
+export LDFLAGS="$IM_LDFLAGS6 $COMMON_IPHONE6_LDFLAGS"
 
 # configure to have the static libraries
 echo "[|- CONFIG $ARCH_IPHONE6]"
